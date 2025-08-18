@@ -1,4 +1,7 @@
+# TODO добавить файл .gitignore и заполнить его
+# TODO venv - почитать и добавить в проект
 from database_utils import initialize_db
+# TODO добавить папку models
 from models.products import add_product, list_products, update_stock
 from models.customers import add_customer, list_customers
 from models.orders import create_order
