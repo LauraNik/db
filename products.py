@@ -3,6 +3,7 @@ from database_utils import get_connection
 def add_product(name, description, price, quantity):
     conn = get_connection()
     try:
+        # TODO убрать в database_utils
         conn.execute("""
         INSERT INTO products (name, description, price, stock_quantity)
         VALUES (?, ?, ?, ?)
@@ -15,6 +16,7 @@ def add_product(name, description, price, quantity):
         conn.close()
 
 def list_products():
+    # TODO убрать в database_utils
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM products")
@@ -25,6 +27,7 @@ def list_products():
 def update_stock(product_id, quantity_change):
     conn = get_connection()
     try:
+        # TODO убрать в database_utils
         cursor = conn.cursor()
         cursor.execute("SELECT stock_quantity FROM products WHERE id = ?", (product_id,))
         row = cursor.fetchone()
@@ -46,6 +49,7 @@ def delete_product(product_id):
     cursor = conn.cursor()
 
     # Проверим, есть ли completed заказы с этим товаром
+    # TODO убрать в database_utils
     cursor.execute("""
         SELECT COUNT(*)
         FROM order_items oi

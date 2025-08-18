@@ -10,6 +10,7 @@ def initialize_db():
     cursor = conn.cursor()
 
     # Таблица товаров
+    # TODO DRY - создать метод create_table 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS products (
         id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -8,6 +8,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
         total = 0
         # Проверка наличия товаров
         for product_id, qty in items:
+            # TODO убрать в database_utils
             cursor.execute("SELECT price, stock_quantity FROM products WHERE id = ?", (product_id,))
             row = cursor.fetchone()
             if not row:
@@ -19,6 +20,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
 
         # Создание заказа
         order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # TODO убрать в database_utils
         cursor.execute("""
         INSERT INTO orders (customer_id, order_date, total_amount)
         VALUES (?, ?, ?)
@@ -26,6 +28,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
         order_id = cursor.lastrowid
 
         # Добавление товаров и обновление склада
+        # TODO убрать в database_utils
         for product_id, qty in items:
             cursor.execute("SELECT price FROM products WHERE id = ?", (product_id,))
             price = cursor.fetchone()[0]
@@ -50,6 +53,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
 def list_orders():
     conn = get_connection()
     cursor = conn.cursor()
+    # TODO убрать в database_utils
     cursor.execute("""
         SELECT o.id, o.order_date, c.name, o.total_amount, o.status
         FROM orders o
@@ -69,6 +73,7 @@ def order_details(order_id):
     cursor = conn.cursor()
 
     # Получаем данные о заказе и клиенте
+    # TODO убрать в database_utils
     cursor.execute("""
         SELECT o.id, o.order_date, o.total_amount, o.status,
                c.name, c.email
@@ -89,6 +94,7 @@ def order_details(order_id):
     print(f"Общая сумма: {order[2]}")
 
     # Получаем список товаров
+    # TODO убрать в database_utils
     cursor.execute("""
         SELECT p.name, oi.quantity, oi.price_at_order
         FROM order_items oi
