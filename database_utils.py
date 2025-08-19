@@ -5,7 +5,7 @@ DB_NAME = "database.db"
 
 def get_connection():
     return sqlite3.connect(DB_NAME)
-
+# TODO Убрать
 def create_table(cursor, query: str):
     cursor.execute(query)
 
@@ -72,6 +72,7 @@ def insert_order(customer_id, total):
     """Создаёт заказ и возвращает его ID"""
     conn = get_connection()
     cursor = conn.cursor()
+    # TODO datetime
     order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute("""
         INSERT INTO orders (customer_id, order_date, total_amount)
@@ -86,6 +87,7 @@ def add_item_in_order(order_id, product_id, quantity, price):
     """Добавляет товар в заказ и обновляет склад"""
     conn = get_connection()
     cursor = conn.cursor()
+    # TODO где qty?
     cursor.execute("""
     INSERT INTO order_items (order_id, product_id, quantity, price_at_order)
     VALUES (?, ?, ?, ?)
