@@ -1,36 +1,25 @@
-from database_utils import get_connection
+from database_utils import (
+    insert_product, fetch_products, get_stock, update_stock_quantity,
+    check_product_in_completed_orders, remove_product
+)
 
 def add_product(name, description, price, quantity):
-    conn = get_connection()
     try:
-        # TODO убрать в database_utils
-        conn.execute("""
-        INSERT INTO products (name, description, price, stock_quantity)
-        VALUES (?, ?, ?, ?)
-        """, (name, description, price, quantity))
-        conn.commit()
+        insert_product(name, description, price, quantity)
         print("Товар добавлен.")
     except Exception as e:
         print(f"Ошибка: {e}")
-    finally:
-        conn.close()
+   
 
 def list_products():
-    # TODO убрать в database_utils
-    conn = get_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT * FROM products")
-    for row in cursor.fetchall():
+    rows = fetch_products()
+    for row in rows:
         print(row)
-    conn.close()
+   
 
 def update_stock(product_id, quantity_change):
-    conn = get_connection()
     try:
-        # TODO убрать в database_utils
-        cursor = conn.cursor()
-        cursor.execute("SELECT stock_quantity FROM products WHERE id = ?", (product_id,))
-        row = cursor.fetchone()
+        row = get_stock(product_id)
         if not row:
             print("Товар не найден.")
             return
@@ -38,34 +27,19 @@ def update_stock(product_id, quantity_change):
         if new_quantity < 0:
             print("Недостаточно товара на складе.")
             return
-        cursor.execute("UPDATE products SET stock_quantity = ? WHERE id = ?", (new_quantity, product_id))
-        conn.commit()
+        
+        update_stock_quantity(product_id, new_quantity)
         print(" Количество обновлено.")
-    finally:
-        conn.close()
+    
         
 def delete_product(product_id):
-    conn = get_connection()
-    cursor = conn.cursor()
 
-    # Проверим, есть ли completed заказы с этим товаром
-    # TODO убрать в database_utils
-    cursor.execute("""
-        SELECT COUNT(*)
-        FROM order_items oi
-        JOIN orders o ON oi.order_id = o.id
-        WHERE oi.product_id = ? AND o.status = 'completed'
-    """, (product_id,))
-    count = cursor.fetchone()[0]
-
-    if count > 0:
-        print(f" Нельзя удалить товар — он участвует в завершённых заказах.")
-        conn.close()
+    if check_product_in_completed_orders(product_id):
+        print(" Нельзя удалить товар — он участвует в завершённых заказах.")
         return
 
     # Если можно — удаляем
-    cursor.execute("DELETE FROM products WHERE id = ?", (product_id,))
-    conn.commit()
+    remove_product(product_id)
     print(" Товар успешно удалён.")
-    conn.close()
+
 
