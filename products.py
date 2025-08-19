@@ -18,19 +18,18 @@ def list_products():
    
 
 def update_stock(product_id, quantity_change):
-    # TODO нет except
-    try:
-        row = get_stock(product_id)
-        if not row:
-            print("Товар не найден.")
-            return
-        new_quantity = row[0] + quantity_change
-        if new_quantity < 0:
-            print("Недостаточно товара на складе.")
-            return
+    
+    row = get_stock(product_id)
+    if not row:
+        print("Товар не найден.")
+        return
+    new_quantity = row[0] + quantity_change
+    if new_quantity < 0:
+        print("Недостаточно товара на складе.")
+        return
         
-        update_stock_quantity(product_id, new_quantity)
-        print(" Количество обновлено.")
+    update_stock_quantity(product_id, new_quantity)
+    print(" Количество обновлено.")
     
         
 def delete_product(product_id):

@@ -3,13 +3,13 @@ from products import add_product, list_products, update_stock
 from customers import add_customer, list_customers
 from orders import create_order
 import os
-# TODO удалить
-import sqlite3
 
 def main():
+
    
-    if 'database.db' not in os.listdir:
-         initialize_db()
+    if 'database.db' not in os.listdir():
+
+        initialize_db()
             
 
     while True:

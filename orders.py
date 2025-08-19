@@ -29,12 +29,13 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
         
 def list_orders():
     rows = fetch_orders()
-    # TODO проверка наличе rows
-    if not rows:
-        print(" Заказов пока нет.")
-    else:
+    if rows:
         for row in rows:
             print(f"Заказ ID: {row[0]} | Дата: {row[1]} | Клиент: {row[2]} | Сумма: {row[3]} | Статус: {row[4]}")
+
+        print(" Заказов пока нет.")
+    else:
+        print(" Заказов пока нет.")
     
 def order_details(order_id):
     # Получаем данные о заказе и клиенте
