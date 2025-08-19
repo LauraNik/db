@@ -29,6 +29,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
         
 def list_orders():
     rows = fetch_orders()
+    # TODO проверка наличе rows
     if not rows:
         print(" Заказов пока нет.")
     else:

@@ -18,6 +18,7 @@ def list_products():
    
 
 def update_stock(product_id, quantity_change):
+    # TODO нет except
     try:
         row = get_stock(product_id)
         if not row:

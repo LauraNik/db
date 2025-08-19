@@ -62,6 +62,7 @@ def initialize_db():
 def get_product_info(product_id):
     """Возвращает цену и количество на складе"""
     conn = get_connection()
+    # TODO нет метода
     cursor = conn_cursor()
     cursor.execute("SELECT price, stock_quantity FROM products WHERE id = ?", (product_id,))
     row = cursor.fetchone()
@@ -71,7 +72,9 @@ def get_product_info(product_id):
 def insert_order(customer_id, total):
     """Создаёт заказ и возвращает его ID"""
     conn = get_connection()
+    # TODO нет метода
     cursor = conn_cursor()
+    # TODO нет order_date
     cursor.execute("""
         INSERT INTO orders (customer_id, order_date, total_amount)
         VALUES (?, ?, ?)
@@ -83,6 +86,7 @@ def insert_order(customer_id, total):
 
 def add_item_in_order(order_id, product_id, quantity, price):
     """Добавляет товар в заказ и обновляет склад"""
+    # TODO нет cursor
     cursor.execute("""
     INSERT INTO order_items (order_id, product_id, quantity, price_at_order)
     VALUES (?, ?, ?, ?)
@@ -132,7 +136,7 @@ def fetch_order(order_id):
 def fetch_items_in_order(order_id):
 
     """Возвращает список товаров в заказе"""
-
+    # TODO нет cursor
     cursor.execute("""
         SELECT p.name, oi.quantity, oi.price_at_order
         FROM order_items oi
@@ -154,6 +158,7 @@ def insert_product(name, description, price, quantity):
     conn.close()
 
 def fetch_products():
+    # TODO табуляция
      """Возвращает список всех товаров"""
     conn = get_connection()
     cursor = conn.cursor()
@@ -179,6 +184,7 @@ def update_stock_quantity(product_id, new_quantity):
     conn.close()
 
 def check_product_in_completed_orders(product_id):
+    # TODO двоеточие убрать
     """Проверяет, участвует ли товар в завершённых заказах""":
     conn = get_connection()
     cursor = conn.cursor()
@@ -211,5 +217,6 @@ def fetch_customers():
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM customers")
+    # TODO зачем тут переменная rows?
     rows = cursor.fetchall()
     conn.close()
