@@ -1,5 +1,3 @@
-# TODO добавить файл .gitignore и заполнить его
-# TODO venv - почитать и добавить в проект
 from database_utils import initialize_db
 from products import add_product, list_products, update_stock
 from customers import add_customer, list_customers
