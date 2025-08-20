@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+# TODO переделать сохранения объектов через create_entities
 from base_dao import create_entity, create_entities, get_entities, get_entity, update_entity, delete_entity
 
 DB_NAME = "database.db"
@@ -58,6 +59,9 @@ def initialize_db():
     conn.commit()
     conn.close()
 
+# TODO перенести в соответствующие файлы (orders, products, customers)
+# TODO + переименовать файлы orders, products, customers добавив к ним _serrvice
+# TODO файл database_utils в utils
 def get_product_info(product_id):
     """Возвращает цену и количество на складе"""
     
@@ -70,6 +74,7 @@ def insert_order(customer_id, total):
     """Создаёт заказ и возвращает его ID"""
 
     order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # TODO убрать комментарии с кусками кода
     #cursor.execute("""
         #INSERT INTO orders (customer_id, order_date, total_amount)
         #VALUES (?, ?, ?)
@@ -88,7 +93,8 @@ def add_item_in_order(order_id, product_id, quantity, price):
     #UPDATE products SET stock_quantity = stock_quantity - ?
     #WHERE id = ?
     #""", (qty, product_id))
-        
+
+    # TODO не используется id
     id = create_entity('order_items', {'order_id': order_id, 'product_id': product_id, 'quantity': quantity, 
                                        'price_at_order': price})
     
@@ -125,7 +131,7 @@ def fetch_order(order_id):
         #JOIN customers c ON o.customer_id = c.id
         #WHERE o.id = ?
     #""", (order_id,))
-    
+    # TODO вынесни объёмные значения в переменные
     order = get_entity('orders o', columns = 'o.id, o.order_date, o.total_amount, o.status, c.name, c.email',
                         joins = [('JOIN', 'customers c', 'o.customer_id = c.id')],  condition = 'o.id = ?', params = (order_id,))
     
