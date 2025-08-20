@@ -5,7 +5,6 @@ from orders import create_order
 import os
 
 def main():
-
    
     if 'database.db' not in os.listdir():
 
