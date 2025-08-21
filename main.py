@@ -1,7 +1,7 @@
-from database_utils import initialize_db
-from products import add_product, list_products, update_stock
-from customers import add_customer, list_customers
-from orders import create_order
+from utils import initialize_db
+from products_service import add_product, list_products, update_stock
+from customers_service import add_customer, list_customers
+from orders_service import create_order
 import os
 
 def main():

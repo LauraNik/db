@@ -1,25 +1,24 @@
-from database_utils import (
-    insert_product, fetch_products, get_stock, update_stock_quantity,
-    check_product_in_completed_orders, remove_product
-)
+from base_dao import create_entity, create_entities, get_entities, get_entity, update_entity, delete_entity
+
 
 def add_product(name, description, price, quantity):
     try:
-        insert_product(name, description, price, quantity)
+        create_entity('products', {'name': name, 'description': description, 'price': price, 'stock_quantity': quantity})
         print("Товар добавлен.")
     except Exception as e:
         print(f"Ошибка: {e}")
    
 
 def list_products():
-    rows = fetch_products()
+    rows = get_entities('products')
     for row in rows:
         print(row)
    
 
 def update_stock(product_id, quantity_change):
     
-    row = get_stock(product_id)
+    row = get_entity('products', columns = 'stock_quantity', condition = 'id = ?', params = (product_id,))
+
     if not row:
         print("Товар не найден.")
         return
@@ -28,18 +27,22 @@ def update_stock(product_id, quantity_change):
         print("Недостаточно товара на складе.")
         return
         
-    update_stock_quantity(product_id, new_quantity)
+    update_entity("products", {"stock_quantity": new_quantity}, "id = ?", (product_id,))
     print(" Количество обновлено.")
     
         
 def delete_product(product_id):
+    
+    joins = [('JOIN', 'orders o', 'o.customer_id = c.id')]
+    condition = 'oi.product_id = ? AND o.status = "completed"', 
 
-    if check_product_in_completed_orders(product_id):
+    count = get_entity('order_items oi', columns = 'COUNT(*)', joins = joins,  condition = condition, params = (product_id,))
+    if count > 0:
         print(" Нельзя удалить товар — он участвует в завершённых заказах.")
         return
 
     # Если можно — удаляем
-    remove_product(product_id)
+    delete_entity('products', 'id=?', params = (product_id,))
     print(" Товар успешно удалён.")
 
 
