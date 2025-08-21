@@ -1,6 +1,8 @@
+# TODO
 import sqlite3
 from utils import get_connection
 
+# TODO
 get_connection()
 
 def create_entity(table:str, data:dict):
@@ -15,6 +17,7 @@ def create_entities(table:str, data_list: list[dict]):
     values = [tuple(d.values()) for d in data_list]
     
     #data_list[0], так как подразумевается, что колонки одинаковые
+    # TODO вынести в соответствующую переменную
     _insert(table, list(data_list[0].keys()), values, one=False) 
 
 
@@ -22,6 +25,7 @@ def update_entity(table:str, data: dict, condition: str, params: tuple, expr=Non
     """Обновить одну запись"""
     if params:
         param_list = params
+    # TODO
     _update(table, [data], condition, param_list=param_list, expr=expr)
 
 def update_entities(table:str, data_list: list[dict], condition: str, param_list: list[tuple], expr=None):
@@ -29,12 +33,16 @@ def update_entities(table:str, data_list: list[dict], condition: str, param_list
     _update(table, data_list, condition, param_list, expr)
 
 def get_entity(table:str, condition: str, columns = '*', params=(), joins=None, order_by = None):
+    # TODO
     return _select(table, params, columns, condition, joins, one=True, order_by=order_by)
         
 def get_entities(table:str, condition=None, params=(), columns="*", joins=None, order_by = None):
+    # TODO error
     return _select(table, params, columns, condition, joins, order_by)
-    
 
+# TODO создать декоратор, который для всех функций ниже будет отлавливать ошибки
+# и передавать в функцию параметры cursor
+# + добавить возможность задать в декаратор парамерт is_commit=True
 def delete_entity(table:str, condition: str, params: tuple):
     """Удалить запись"""
     conn = get_connection()
@@ -73,6 +81,7 @@ def _select(table: str, params = (), columns: str = "*", condition: str = None, 
         
         cursor = conn.execute(query, params)
         return cursor.fetchone() if one else cursor.fetchall()
+    # TODO except
     finally:
         conn.close()
 
@@ -92,6 +101,7 @@ def _insert(table: str, columns: list[str], values: tuple, one: bool = True):
         else:
             cursor.executemany(query, values)
             conn.commit()
+    # TODO except
     finally:
         conn.close()
 
@@ -131,6 +141,7 @@ def _update(table: str, data_list: list[dict], condition: str, param_list: list[
             cursor.executemany(query, values)
         
         conn.commit()
+    # TODO except
     finally:
         conn.close()
 

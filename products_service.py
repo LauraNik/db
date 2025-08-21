@@ -5,6 +5,7 @@ def add_product(name, description, price, quantity):
     try:
         create_entity('products', {'name': name, 'description': description, 'price': price, 'stock_quantity': quantity})
         print("Товар добавлен.")
+        # TODO except
     except Exception as e:
         print(f"Ошибка: {e}")
    

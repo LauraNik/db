@@ -1,3 +1,4 @@
+# TODO
 from base_dao import create_entity, create_entities, get_entities, get_entity, update_entity, update_entities, delete_entity
 from datetime import datetime
 
@@ -16,16 +17,19 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
 
         #Создание заказа, вовзращает его id 
         order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # TODO нет проверки пользователя
         data = {'customer_id': customer_id, 'order_date': order_date, 'total_amount': total}
         order_id = create_entity('orders', data)
 
         
         # Добавление товаров и обновление склада
+        # TODO зачем тут список?
         product_ids = tuple([prod_id for prod_id, q in items])
         quantities = tuple([q for prod_id, q in items])
         condition = f"id IN ({', '.join(['?']*len(product_ids))})"
         prices = get_entities('products', condition = condition, columns='price', params=product_ids)
         data_list = []
+        # TODO вместо zip итерируемся по списку, который нужно сделать в цикле проверке наличия товаров
         for (product_id, quantity), (price,) in zip(items, prices):
             data_list.append({
                 "order_id": order_id,
@@ -35,6 +39,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
                 }) 
         create_entities('order_items', data_list)
         expr = 'stock_quantity = stock_quantity - ?'
+        # TODO param_list можно сформировать в цикле проверки наличия товаров
         param_list = [(q, pid) for pid, q in zip(product_ids, quantities)]
         update_entities('products', [], condition = 'id = ?', param_list = param_list, expr=expr)
         
@@ -51,7 +56,7 @@ def list_orders():
     if rows:
         for row in rows:
             print(f"Заказ ID: {row[0]} | Дата: {row[1]} | Клиент: {row[2]} | Сумма: {row[3]} | Статус: {row[4]}")
-
+        # TODO удалить
         print(" Заказов пока нет.")
     else:
         print(" Заказов пока нет.")
