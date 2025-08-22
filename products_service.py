@@ -1,13 +1,11 @@
-from base_dao import create_entity, create_entities, get_entities, get_entity, update_entity, delete_entity
+from base_dao import create_entity, get_entities, get_entity, update_entity, delete_entity
 
 
 def add_product(name, description, price, quantity):
-    try:
-        create_entity('products', {'name': name, 'description': description, 'price': price, 'stock_quantity': quantity})
-        print("Товар добавлен.")
-        # TODO except
-    except Exception as e:
-        print(f"Ошибка: {e}")
+ 
+    create_entity('products', {'name': name, 'description': description, 'price': price, 'stock_quantity': quantity})
+    print("Товар добавлен.")
+        
    
 
 def list_products():

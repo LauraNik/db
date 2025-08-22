@@ -1,9 +1,4 @@
-# TODO
-import sqlite3
-from utils import get_connection
-
-# TODO
-get_connection()
+from utils import make_decorator
 
 def create_entity(table:str, data:dict):
     """Создать одну запись"""
@@ -16,98 +11,80 @@ def create_entities(table:str, data_list: list[dict]):
     
     values = [tuple(d.values()) for d in data_list]
     
-    #data_list[0], так как подразумевается, что колонки одинаковые
-    # TODO вынести в соответствующую переменную
-    _insert(table, list(data_list[0].keys()), values, one=False) 
+    columns = list(data_list[0].keys())
+    _insert(table, columns, values, one=False) 
 
 
 def update_entity(table:str, data: dict, condition: str, params: tuple, expr=None):
     """Обновить одну запись"""
     if params:
         param_list = params
-    # TODO
-    _update(table, [data], condition, param_list=param_list, expr=expr)
+   
+    _update(table, [data], condition, param_list, expr)
 
 def update_entities(table:str, data_list: list[dict], condition: str, param_list: list[tuple], expr=None):
     """Обновить несколько записей (batch update)"""
     _update(table, data_list, condition, param_list, expr)
 
 def get_entity(table:str, condition: str, columns = '*', params=(), joins=None, order_by = None):
-    # TODO
-    return _select(table, params, columns, condition, joins, one=True, order_by=order_by)
+    return _select(table, params, columns, condition, joins, True, order_by)
         
 def get_entities(table:str, condition=None, params=(), columns="*", joins=None, order_by = None):
-    # TODO error
-    return _select(table, params, columns, condition, joins, order_by)
+    return _select(table, params, columns, condition, joins, order_by=order_by)
 
-# TODO создать декоратор, который для всех функций ниже будет отлавливать ошибки
-# и передавать в функцию параметры cursor
-# + добавить возможность задать в декаратор парамерт is_commit=True
-def delete_entity(table:str, condition: str, params: tuple):
+
+@make_decorator(True)
+def delete_entity(cursor, table:str, condition: str, params: tuple):
     """Удалить запись"""
-    conn = get_connection()
-    cursor = conn.cursor()
-    try:
-        query = f'DELETE FROM {table} WHERE {condition}'
-        cursor.execute(query, params)
-        conn.commit()
-    except Exception as e:
-        print(f"Ошибка: {e}")
-    finally:
-        conn.close()
+    
+    query = f'DELETE FROM {table} WHERE {condition}'
+    cursor.execute(query, params)
 
 
-def _select(table: str, params = (), columns: str = "*", condition: str = None, joins = None, one = False, order_by = None):
+@make_decorator()
+def _select(cursor, table: str, params = (), columns: str = "*", condition: str = None, joins = None, one = False, order_by = None):
     
     """
     :param condition: условие WHERE (без 'WHERE')
     :param joins: список кортежей (тип_джоина, таблица, on), например [("JOIN", "orders o", "o.user_id = u.id")]
     """
-    conn = get_connection()
-    cursor = conn.cursor()
-    try:
-        query = f"SELECT {columns} FROM {table}"
+    
+    query = f"SELECT {columns} FROM {table}"
         
-        if joins:
-            for join_type, join_table, join_on in joins:
-                query += f" {join_type} {join_table} ON {join_on}"
+    if joins:
+        for join_type, join_table, join_on in joins:
+            query += f" {join_type} {join_table} ON {join_on}"
         
         
-        if condition:
-            query += f" WHERE {condition}"
+    if condition:
+        query += f" WHERE {condition}"
             
-        if order_by:
-            query += f" ORDER BY {order_by}"
-        
-        cursor = conn.execute(query, params)
-        return cursor.fetchone() if one else cursor.fetchall()
-    # TODO except
-    finally:
-        conn.close()
+    if order_by:
+        query += f" ORDER BY {order_by}"
 
+    
+    cursor.execute(query, params)
+    return cursor.fetchone() if one else cursor.fetchall()
+    
+   
 
-def _insert(table: str, columns: list[str], values: tuple, one: bool = True):
-    conn = get_connection()
-    try:
-        cursor = conn.cursor()
-        placeholders = ", ".join(["?"] * len(columns))
-        query = f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({placeholders})"
+@make_decorator(True)
+def _insert(cursor, table: str, columns: list[str], values: tuple, one: bool = True):
+    
+    placeholders = ", ".join(["?"] * len(columns))
+    query = f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({placeholders})"
 
-        if one:
-            cursor.execute(query, values)
-            row_id = cursor.lastrowid
-            conn.commit()
-            return row_id
-        else:
-            cursor.executemany(query, values)
-            conn.commit()
-    # TODO except
-    finally:
-        conn.close()
+    if one:
+        cursor.execute(query, values)
+        row_id = cursor.lastrowid
+        return row_id
+    else:
+        cursor.executemany(query, values)
 
 
 
-def _update(table: str, data_list: list[dict], condition: str, param_list: list[tuple] = None, expr: str = None):
+@make_decorator(True)
+def _update(cursor, table: str, data_list: list[dict], condition: str, param_list: list[tuple] = None, expr: str = None):
     """
     Универсальное обновление записей.
     
@@ -118,30 +95,23 @@ def _update(table: str, data_list: list[dict], condition: str, param_list: list[
     """
     if not data_list and not expr:
         return
+     
+    if not expr:
+        expr = ", ".join([f"{col}=?" for col in data_list[0].keys()])
+        
+    query = f"UPDATE {table} SET {expr} WHERE {condition}"
+        
+    # один update
+    if len(data_list) <= 1:
+        values = tuple(data_list[0].values()) if data_list else ()
+        if param_list:
+            values += param_list[0]
+        cursor.execute(query, values)
+        
+    # множественный update
+    else:
+        values = [tuple(dictionary.values()) + param for dictionary, param in zip(data_list, param_list)]
+        cursor.executemany(query, values)
 
-    conn = get_connection()
-    try:
-        cursor = conn.cursor()
-        
-        if not expr:
-            expr = ", ".join([f"{col}=?" for col in data_list[0].keys()])
-        
-        query = f"UPDATE {table} SET {expr} WHERE {condition}"
-        
-        # один update
-        if len(data_list) <= 1:
-            values = tuple(data_list[0].values()) if data_list else ()
-            if param_list:
-                values += param_list[0]
-            cursor.execute(query, values)
-        
-        # множественный update
-        else:
-            values = [tuple(dictionary.values()) + param for dictionary, param in zip(data_list, param_list)]
-            cursor.executemany(query, values)
-        
-        conn.commit()
-    # TODO except
-    finally:
-        conn.close()
-
+    
+    

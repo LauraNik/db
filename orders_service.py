@@ -1,9 +1,10 @@
-# TODO
-from base_dao import create_entity, create_entities, get_entities, get_entity, update_entity, update_entities, delete_entity
+from base_dao import create_entity, create_entities, get_entities, get_entity, update_entities
 from datetime import datetime
 
 def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
     try:
+        data_list = []
+        param_list = []
         total = 0
         # Проверка наличия товаров
         for product_id, qty in items:
@@ -11,40 +12,39 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
             if not info:
                 raise Exception(f"Товар {product_id} не найден.")
             price, stock = info
+            
+            data_list.append({
+                "product_id": product_id,
+                "quantity": qty,
+                "price_at_order": price
+                })
+            param_list.append((qty, product_id))
+
             if stock < qty:
                 raise Exception(f"Недостаточно товара с ID {product_id}. В наличии: {stock}")
             total += price * qty
 
         #Создание заказа, вовзращает его id 
         order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # TODO нет проверки пользователя
-        data = {'customer_id': customer_id, 'order_date': order_date, 'total_amount': total}
-        order_id = create_entity('orders', data)
-
+        customer_ids = get_entities('customers', columns = 'id')
+        customer_ids = [id[0] for id in customer_ids]
         
         # Добавление товаров и обновление склада
-        # TODO зачем тут список?
-        product_ids = tuple([prod_id for prod_id, q in items])
-        quantities = tuple([q for prod_id, q in items])
-        condition = f"id IN ({', '.join(['?']*len(product_ids))})"
-        prices = get_entities('products', condition = condition, columns='price', params=product_ids)
-        data_list = []
-        # TODO вместо zip итерируемся по списку, который нужно сделать в цикле проверке наличия товаров
-        for (product_id, quantity), (price,) in zip(items, prices):
-            data_list.append({
-                "order_id": order_id,
-                "product_id": product_id,
-                "quantity": quantity,
-                "price_at_order": price
-                }) 
-        create_entities('order_items', data_list)
-        expr = 'stock_quantity = stock_quantity - ?'
-        # TODO param_list можно сформировать в цикле проверки наличия товаров
-        param_list = [(q, pid) for pid, q in zip(product_ids, quantities)]
-        update_entities('products', [], condition = 'id = ?', param_list = param_list, expr=expr)
+        if customer_id in customer_ids:
+            data = {'customer_id': customer_id, 'order_date': order_date, 'total_amount': total}
+            order_id = create_entity('orders', data)
+            for d in data_list:
+                d['order_id'] = order_id
         
-        print(f"Заказ №{order_id} создан на сумму {total:.2f}")
+            create_entities('order_items', data_list)
+            expr = 'stock_quantity = stock_quantity - ?'
+            update_entities('products', [], condition = 'id = ?', param_list = param_list, expr=expr)
+            
+            print(f"Заказ №{order_id} создан на сумму {total:.2f}")
+        else:
+            print('Покупатель не найден. Заказ создать не удалось.')
 
+      
     except Exception as e:
         print(f"Ошибка: {e}")
         
@@ -56,8 +56,7 @@ def list_orders():
     if rows:
         for row in rows:
             print(f"Заказ ID: {row[0]} | Дата: {row[1]} | Клиент: {row[2]} | Сумма: {row[3]} | Статус: {row[4]}")
-        # TODO удалить
-        print(" Заказов пока нет.")
+        
     else:
         print(" Заказов пока нет.")
     
