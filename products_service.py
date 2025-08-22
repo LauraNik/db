@@ -36,6 +36,7 @@ def delete_product(product_id):
     condition = 'oi.product_id = ? AND o.status = "completed"', 
 
     count = get_entity('order_items oi', columns = 'COUNT(*)', joins = joins,  condition = condition, params = (product_id,))
+    # TODO if count:
     if count > 0:
         print(" Нельзя удалить товар — он участвует в завершённых заказах.")
         return

@@ -26,6 +26,7 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
 
         #Создание заказа, вовзращает его id 
         order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        # TODO получать 1 объект
         customer_ids = get_entities('customers', columns = 'id')
         customer_ids = [id[0] for id in customer_ids]
         
