@@ -4,6 +4,8 @@ from customers_service import add_customer, list_customers
 from orders_service import create_order
 import os
 
+# TODO вернуть папку service
+# TODO проверить код на работоспособность!
 
 def main():
 

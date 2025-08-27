@@ -3,6 +3,7 @@ from model.OrdersModel import OrdersModel
 from model.ProductsModel import ProductsModel
 
 @dataclass(init=False)
+# TODO убрать _ + название файла
 class Order_ItemsModel(object):
     id: int = None
     order_id: int = None
@@ -14,11 +15,13 @@ class Order_ItemsModel(object):
     table_name: str = 'order_items'
 
     def __init__(self, data):
+        # TODO get
         self.id = data['id']
         self.order_id = data['order_id']
         self.product_id = data['product_id']
         self.quantity = data['quantity']
         self.price_at_order = data['price_at_order']
+        # TODO переделать проверку
         self.order = OrdersModel(data['id'], data['customer_id'], data['order_date'], data['total_amount'], data['status']) if data['order'] else None
         self.product = ProductsModel(data[id], data['name'], data['description'], data['price'], data['stock_quantity']) if data['product'] else None
 

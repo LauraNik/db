@@ -4,6 +4,7 @@ from model.Order_ItemsModel import Order_ItemsModel
 
 
 def add_product(name, description, price, quantity):
+    # TODO
     data = {'id': None, 'name': name, "description": description, 'price': price, 'stock_quantity': quantity}
     create_entity(ProductsModel(data))
     print("Товар добавлен.")

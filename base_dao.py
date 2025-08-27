@@ -4,7 +4,7 @@ def create_entity(model, data):
     """Создать одну запись"""
     return _insert(model, list(data.keys()), tuple(data.values()))
 
-
+# TODO
 def create_entities(model, data_list: list[dict]):
     """Создать несколько записей"""
     if not data_list:
@@ -102,6 +102,7 @@ def _insert(cursor, model, columns: list[str], values: tuple, one: bool = True):
 
 
 @make_decorator(True)
+# TODO перепроверить
 def _update(cursor, model, data_list: list[dict], condition: str, param_list: list[tuple] = None, expr: str = None):
     """
     Универсальное обновление записей.

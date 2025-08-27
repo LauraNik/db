@@ -8,7 +8,7 @@ class ProductsModel(object):
     price: float = None
     stock_quantity: int = None
     table_name: str = 'products'
-
+    # TODO
     def __init__(self, data):
         self.id = data['id']
         self.name = data['name']
