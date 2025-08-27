@@ -47,7 +47,7 @@ def initialize_db():
         """
     ]
 
-    conn = get_connection()
+    conn = get_connection()  
     cursor = conn.cursor()
 
     for query in tables:
@@ -60,7 +60,9 @@ def make_decorator(is_commit=False):
     def decorator(func):
         def wrapper(*args, **kwargs):
             conn = get_connection()
+            conn.row_factory = sqlite3.Row
             cursor = conn.cursor()
+            
             try:
                 result = func(cursor, *args, **kwargs)
                 if is_commit:

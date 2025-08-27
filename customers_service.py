@@ -1,12 +1,14 @@
 from base_dao import create_entity,  get_entities
+from model.CustomersModel import CustomersModel
 
 def add_customer(name, email):
-    create_entity("customers", {"name": name, "email": email})
+    data = {'id': None, 'name': name, 'email': email}
+    create_entity(CustomersModel(data))
     print("Клиент добавлен.")
     
     
 def list_customers():
-    rows = get_entities('customers')
+    rows = get_entities(CustomersModel)
     for row in rows:
         print(row)
 

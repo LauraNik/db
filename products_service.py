@@ -1,48 +1,53 @@
 from base_dao import create_entity, get_entities, get_entity, update_entity, delete_entity
+from model.ProductsModel import ProductsModel
+from model.Order_ItemsModel import Order_ItemsModel
 
 
 def add_product(name, description, price, quantity):
- 
-    create_entity('products', {'name': name, 'description': description, 'price': price, 'stock_quantity': quantity})
+    data = {'id': None, 'name': name, "description": description, 'price': price, 'stock_quantity': quantity}
+    create_entity(ProductsModel(data))
     print("Товар добавлен.")
         
    
-
 def list_products():
-    rows = get_entities('products')
+    rows = get_entities(ProductsModel)
     for row in rows:
         print(row)
-   
-
+        
+    
 def update_stock(product_id, quantity_change):
     
-    row = get_entity('products', columns = 'stock_quantity', condition = 'id = ?', params = (product_id,))
+    row = get_entity(ProductsModel, condition = 'id = ?', params = (product_id,))
+    
+    qty = row.stock_quantity
 
-    if not row:
+    if not qty:
         print("Товар не найден.")
         return
-    new_quantity = row[0] + quantity_change
+    new_quantity =qty + quantity_change
     if new_quantity < 0:
         print("Недостаточно товара на складе.")
         return
         
-    update_entity("products", {"stock_quantity": new_quantity}, "id = ?", (product_id,))
+    update_entity(ProductsModel, {"stock_quantity": new_quantity}, "id = ?", (product_id,))
     print(" Количество обновлено.")
     
         
 def delete_product(product_id):
-    
-    joins = [('JOIN', 'orders o', 'o.customer_id = c.id')]
-    condition = 'oi.product_id = ? AND o.status = "completed"', 
+  
+    #joins = [('JOIN', 'orders o', ''oi.order_id = o.id')]
 
-    count = get_entity('order_items oi', columns = 'COUNT(*)', joins = joins,  condition = condition, params = (product_id,))
-    # TODO if count:
-    if count > 0:
+    joins = [('JOIN', 'orders', 'order_items.order_id = orders.id')]
+    condition = 'order_items.product_id = ? AND orders.status = "completed"'
+
+    count = get_entity(Order_ItemsModel, columns = 'COUNT(*)', joins = joins,  condition = condition, params = (product_id,))
+    
+    if count:
         print(" Нельзя удалить товар — он участвует в завершённых заказах.")
         return
 
     # Если можно — удаляем
-    delete_entity('products', 'id=?', params = (product_id,))
+    delete_entity(ProductsModel, 'id=?', params = (product_id,))
     print(" Товар успешно удалён.")
 
 

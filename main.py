@@ -4,18 +4,10 @@ from customers_service import add_customer, list_customers
 from orders_service import create_order
 import os
 
-# TODO
-# 1) вынести все service в отдельную папку service
-# 2) для каждой таблице создать модель данных. 1 класс модели = 1 файл
-# 2.1) модели храним в отдельной папке model
-# 2.2) модель создаём с использованием @dataclass
-# 2.3) файл модели называется аналогично названию класса
-# 3) переделать работу всей программы через модели (dao должно получать на вход модель и отдавать модель)
 
 def main():
 
     if 'database.db' not in os.listdir():
-
         initialize_db()
             
 
