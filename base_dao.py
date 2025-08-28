@@ -1,19 +1,21 @@
 from utils import make_decorator
 
-def create_entity(model, data):
+def create_entity(model):
     """Создать одну запись"""
-    return _insert(model, list(data.keys()), tuple(data.values()))
+    table = model.table_name
+    columns = model.columns()
+    values = model.values()
+    return _insert(table, columns, values)
 
-# TODO
-def create_entities(model, data_list: list[dict]):
+
+def create_entities(models):
     """Создать несколько записей"""
-    if not data_list:
-        return
     
-    values = [tuple((d.values())) for d in data_list]
+    table = models[0].table_name
+    values = [model.values() for model in models]
+    columns = list(models[0].columns())
     
-    columns = list(data_list[0].keys())
-    _insert(model, columns, values, one=False) 
+    _insert(table, columns, values, one=False) 
 
 
 def update_entity(model, data: dict, condition: str, params: tuple, expr:str = None):
@@ -27,7 +29,7 @@ def update_entities(model, data_list: list[dict], condition: str, param_list: li
     """Обновить несколько записей (batch update)"""
     _update(model, data_list, condition, param_list, expr)
 
-def get_entity(model, condition: str, columns = "*", params=(), joins=None, order_by = None):
+def get_entity(model, condition: str = None, columns = "*", params=(), joins=None, order_by = None):
     return _select(model, params, columns, condition, joins, True, order_by)
         
 def get_entities(model, condition=None, params=(), columns="*", joins=None, order_by = None):
@@ -52,6 +54,7 @@ def _select(cursor, model, params = (), columns: str = '*', condition: str = Non
     :param joins: список кортежей (тип_джоина, таблица, on), например [("JOIN", "orders o", "o.user_id = u.id")]
     """
     table = model.table_name
+   
     query = f"SELECT {columns} FROM {table}"
         
     if joins:
@@ -73,12 +76,12 @@ def _select(cursor, model, params = (), columns: str = '*', condition: str = Non
     if columns == '*':
         if one:
             if data:
-                return model(data)
+                return model(dict(data))
             else:
                 return None
         else:
             
-            return [model(row) for row in data]
+            return [model(dict(row)) for row in data]
                 
     else:
         return data[0]
@@ -86,9 +89,8 @@ def _select(cursor, model, params = (), columns: str = '*', condition: str = Non
    
 
 @make_decorator(True)
-def _insert(cursor, model, columns: list[str], values: tuple, one: bool = True):
+def _insert(cursor, table, columns: list[str], values: tuple, one: bool = True):
     
-    table = model.table_name
     placeholders = ", ".join(["?"] * len(columns))
     query = f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({placeholders})"
 
@@ -102,12 +104,12 @@ def _insert(cursor, model, columns: list[str], values: tuple, one: bool = True):
 
 
 @make_decorator(True)
-# TODO перепроверить
 def _update(cursor, model, data_list: list[dict], condition: str, param_list: list[tuple] = None, expr: str = None):
     """
     Универсальное обновление записей.
     
-    :param data_list: список словарей с данными для SET
+    :param data_list: список словарей с данными для SET (например [{'stock_quantity': new_quantity}])
+    :condition: строка с условием (например: condition = 'id = ?')
     :param param_list: список кортежей для WHERE при множественном обновлении
     :param expr: если передано, используется как SET выражение (например "stock_quantity = stock_quantity - ?")
                  тогда data_list может быть пустой, значения берутся из param_list

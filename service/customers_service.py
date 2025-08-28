@@ -2,8 +2,7 @@ from base_dao import create_entity,  get_entities
 from model.CustomersModel import CustomersModel
 
 def add_customer(name, email):
-    # TODO
-    data = {'id': None, 'name': name, 'email': email}
+    data = {'name': name, 'email': email}
     create_entity(CustomersModel(data))
     print("Клиент добавлен.")
     

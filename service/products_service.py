@@ -1,11 +1,10 @@
 from base_dao import create_entity, get_entities, get_entity, update_entity, delete_entity
 from model.ProductsModel import ProductsModel
-from model.Order_ItemsModel import Order_ItemsModel
+from model.OrderItemsModel import OrderItemsModel
 
 
 def add_product(name, description, price, quantity):
-    # TODO
-    data = {'id': None, 'name': name, "description": description, 'price': price, 'stock_quantity': quantity}
+    data = {'name': name, "description": description, 'price': price, 'stock_quantity': quantity}
     create_entity(ProductsModel(data))
     print("Товар добавлен.")
         
@@ -25,7 +24,7 @@ def update_stock(product_id, quantity_change):
     if not qty:
         print("Товар не найден.")
         return
-    new_quantity =qty + quantity_change
+    new_quantity = qty + quantity_change
     if new_quantity < 0:
         print("Недостаточно товара на складе.")
         return
@@ -41,7 +40,7 @@ def delete_product(product_id):
     joins = [('JOIN', 'orders', 'order_items.order_id = orders.id')]
     condition = 'order_items.product_id = ? AND orders.status = "completed"'
 
-    count = get_entity(Order_ItemsModel, columns = 'COUNT(*)', joins = joins,  condition = condition, params = (product_id,))
+    count = get_entity(OrderItemsModel, columns = 'COUNT(*)', joins = joins,  condition = condition, params = (product_id,))
     
     if count:
         print(" Нельзя удалить товар — он участвует в завершённых заказах.")

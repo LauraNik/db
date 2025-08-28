@@ -1,10 +1,10 @@
 from base_dao import create_entity, create_entities, get_entities, get_entity, update_entities
-
 from datetime import datetime
 from model.ProductsModel import ProductsModel
 from model.CustomersModel import CustomersModel
 from model.OrdersModel import OrdersModel
-from model.Order_ItemsModel import Order_ItemsModel
+from model.OrderItemsModel import OrderItemsModel
+
 def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
     try:
         data_list = []
@@ -17,15 +17,8 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
                 raise Exception(f"Товар {product_id} не найден.")
             price, stock = info.price, info.stock_quantity
             
-            
-            #data_list.append({
-                #"product_id": product_id,
-                #"quantity": qty,
-                #"price_at_order": price
-                #})
-            #data = {"product_id": product_id, "quantity": qty, "price_at_order": price}
-            data = {'id': None, 'order_id': None, "product_id": product_id, "quantity": qty, "price_at_order": price}
-            data_list.append(data)
+            data = {"product_id": product_id, "quantity": qty, "price_at_order": price}
+            data_list.append(OrderItemsModel(data))
             param_list.append((qty, product_id))
 
             if stock < qty:
@@ -38,19 +31,16 @@ def create_order(customer_id, items):  # items = [(product_id, quantity), ...]
         
         # Добавление товаров и обновление склада
         if row:
-            data = {'id': None, 'customer_id': customer_id, 'order_date': order_date, 'total_amount': total,
-                    'status':'pending'}
+            data = {'customer_id': customer_id, 'order_date': order_date, 'total_amount': total}
+            order_id = create_entity(OrdersModel(data))
             
-            order_id = create_entity(OrdersModel, data)
-            
-            for d in data_list:
-                d['order_id'] = order_id
+            for m in data_list:
+                m.order_id = order_id
 
-            create_entities(Order_ItemsModel, data_list)
+            create_entities(data_list)
             
             expr = 'stock_quantity = stock_quantity - ?'
             update_entities(ProductsModel, [], condition = 'id = ?', param_list = param_list, expr=expr )
-            
             print(f"Заказ №{order_id} создан на сумму {total:.2f}")
         else:
             print('Покупатель не найден. Заказ создать не удалось.')
@@ -90,8 +80,7 @@ def order_details(order_id):
     # Получаем список товаров
     #columns = 'p.name, oi.quantity, oi.price_at_order'
     joins = [('JOIN', 'products', 'order_items.product_id = products.id')]
-    rows = get_entities(Order_ItemsModel, joins = joins,  condition = 'order_items.order_id = ?', params = (order_id,))
-
+    rows = get_entities(OrderItemsModel, joins = joins,  condition = 'order_items.order_id = ?', params = (order_id,))
     print("\n Товары в заказе:")
     for row in rows:
         print(f" {row.product.name} | Кол-во: {row.quantity} | Цена за ед. на момент заказа: {row.price_at_order}")

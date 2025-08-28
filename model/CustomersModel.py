@@ -8,10 +8,16 @@ class CustomersModel(object):
     table_name: str = 'customers'
     # TODO
     def __init__(self, data):
-        self.id = data['id']
-        self.name = data['name']
-        self.email = data['email']
+        self.id = data.get('id', None)
+        self.name = data.get('name', None)
+        self.email = data.get('email', None)
 
+    def columns(self):
+        return 'id', 'name', 'email'
+    
+    def values(self):
+        return self.id, self.name, self.email
+    
     
     def __str__(self):
         return f"CustomersModel(id={self.id}, name='{self.name}', email='{self.email}')"

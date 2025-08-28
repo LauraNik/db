@@ -1,11 +1,8 @@
 from utils import initialize_db
-from products_service import add_product, list_products, update_stock
-from customers_service import add_customer, list_customers
-from orders_service import create_order
+from service.products_service import add_product, list_products, update_stock
+from service.customers_service import add_customer, list_customers
+from service.orders_service import create_order
 import os
-
-# TODO вернуть папку service
-# TODO проверить код на работоспособность!
 
 def main():
 
