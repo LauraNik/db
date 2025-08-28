@@ -102,7 +102,7 @@ def _insert(cursor, table, columns: list[str], values: tuple, one: bool = True):
         cursor.executemany(query, values)
 
 
-
+# TODO data_list
 @make_decorator(True)
 def _update(cursor, model, data_list: list[dict], condition: str, param_list: list[tuple] = None, expr: str = None):
     """

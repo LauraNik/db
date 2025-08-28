@@ -12,6 +12,7 @@ class OrdersModel:
     table_name: str = 'orders'
     
     def __init__(self, data):
+        # TODO
         self.id = data.get('id', None)
         self.customer_id = data.get('customer_id', None)
         self.order_date = data.get('order_date', None)

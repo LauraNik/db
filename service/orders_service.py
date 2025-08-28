@@ -80,6 +80,7 @@ def order_details(order_id):
     # Получаем список товаров
     #columns = 'p.name, oi.quantity, oi.price_at_order'
     joins = [('JOIN', 'products', 'order_items.product_id = products.id')]
+    # TODO Создать OrderItemsService
     rows = get_entities(OrderItemsModel, joins = joins,  condition = 'order_items.order_id = ?', params = (order_id,))
     print("\n Товары в заказе:")
     for row in rows:

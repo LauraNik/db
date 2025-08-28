@@ -4,6 +4,13 @@ from service.customers_service import add_customer, list_customers
 from service.orders_service import create_order
 import os
 
+# TODO 
+# 1) каждый сервис обернуть в свой класс 
+# 2) для общих частей создать BaseService и унаследовать все сервисы от него 
+# 3) переименовать все методы в соответствии с dao
+# 4) переделать base_dao в класс
+
+
 def main():
 
     if 'database.db' not in os.listdir():

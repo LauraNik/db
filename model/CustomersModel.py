@@ -6,8 +6,8 @@ class CustomersModel(object):
     name: str = None
     email: str = None
     table_name: str = 'customers'
-    # TODO
-    def __init__(self, data):
+
+    def __init__(self, **data):
         self.id = data.get('id', None)
         self.name = data.get('name', None)
         self.email = data.get('email', None)
