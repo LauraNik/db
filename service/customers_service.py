@@ -1,14 +1,19 @@
-from base_dao import create_entity,  get_entities
 from model.CustomersModel import CustomersModel
+from service.base_service import BaseService
 
-def add_customer(name, email):
-    data = {'name': name, 'email': email}
-    create_entity(CustomersModel(data))
-    print("Клиент добавлен.")
-    
-    
-def list_customers():
-    rows = get_entities(CustomersModel)
-    for row in rows:
-        print(row)
+class CustomersService(BaseService):
+
+    def __init__(self):
+        super().__init__(CustomersModel)
+
+    def create_entity(self, data: dict): 
+        super().create_entity(self.model(data))
+        print("Клиент добавлен.")
+
+    def get_entities(self):
+        rows = super().get_entities()
+        for row in rows:
+            print(row)
+        
+
 

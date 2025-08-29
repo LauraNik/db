@@ -15,11 +15,11 @@ class OrderItemsModel(object):
 
     def __init__(self, data):
         
-        self.id = data.get('id', None)
-        self.order_id = data.get('order_id', None)
-        self.product_id = data.get('product_id', None)
-        self.quantity = data.get('quantity', None)
-        self.price_at_order = data.get('price_at_order', None)
+        self.id = data.get('id')
+        self.order_id = data.get('order_id')
+        self.product_id = data.get('product_id')
+        self.quantity = data.get('quantity')
+        self.price_at_order = data.get('price_at_order')
         
         self.order = OrdersModel(data) 
         self.product = ProductsModel(data) 

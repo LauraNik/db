@@ -1,15 +1,8 @@
 from utils import initialize_db
-from service.products_service import add_product, list_products, update_stock
-from service.customers_service import add_customer, list_customers
-from service.orders_service import create_order
+from service.products_service import ProductsService
+from service.customers_service import CustomersService
+from service.orders_service import OrdersService
 import os
-
-# TODO 
-# 1) каждый сервис обернуть в свой класс 
-# 2) для общих частей создать BaseService и унаследовать все сервисы от него 
-# 3) переименовать все методы в соответствии с dao
-# 4) переделать base_dao в класс
-
 
 def main():
 
@@ -34,19 +27,24 @@ def main():
             desc = input("Описание: ")
             price = float(input("Цена: "))
             qty = int(input("Количество: "))
-            add_product(name, desc, price, qty)
+            ProductsService().create_entity({'name': name, "description": desc, 'price': price, 'stock_quantity': qty})
+            #add_product(name, desc, price, qty)
         elif choice == "2":
-            list_products()
+            ProductsService().get_entities()
+            #list_products()
         elif choice == "3":
             pid = int(input("ID товара: "))
             change = int(input("Изменение количества (+/-): "))
-            update_stock(pid, change)
+            ProductsService().update_entity(pid, change)
+            #update_stock(pid, change)
         elif choice == "4":
             name = input("Имя клиента: ")
             email = input("Email: ")
-            add_customer(name, email)
+            CustomersService().create_entity({'name': name, 'email': email})
+            #dd_customer(name, email)
         elif choice == "5":
-            list_customers()
+            CustomersService().get_entities()
+            #list_customers()
         elif choice == "6":
             cid = int(input("ID клиента: "))
             items = []
@@ -56,7 +54,8 @@ def main():
                     break
                 qty = int(input("Количество: "))
                 items.append((pid, qty))
-            create_order(cid, items)
+            OrdersService().create_entities(cid, items)
+            #create_order(cid, items)
         elif choice == "0":
             break
         else:

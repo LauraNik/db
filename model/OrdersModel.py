@@ -12,11 +12,10 @@ class OrdersModel:
     table_name: str = 'orders'
     
     def __init__(self, data):
-        # TODO
-        self.id = data.get('id', None)
-        self.customer_id = data.get('customer_id', None)
-        self.order_date = data.get('order_date', None)
-        self.total_amount = data.get('total_amount', None)
+        self.id = data.get('id')
+        self.customer_id = data.get('customer_id')
+        self.order_date = data.get('order_date')
+        self.total_amount = data.get('total_amount')
         self.status = data.get('status', 'pending')
         self.customer = CustomersModel(data)
 

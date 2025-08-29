@@ -56,23 +56,4 @@ def initialize_db():
     conn.commit()
     conn.close()
 
-def make_decorator(is_commit=False):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            conn = get_connection()
-            conn.row_factory = sqlite3.Row
-            cursor = conn.cursor()
-            
-            try:
-                result = func(cursor, *args, **kwargs)
-                if is_commit:
-                    conn.commit()
-                return result
-        
-            except Exception as e:
-                print(f"Ошибка: {e}")
-                conn.rollback()
-            finally:
-                conn.close()
-        return wrapper
-    return decorator
+

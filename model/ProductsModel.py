@@ -10,11 +10,11 @@ class ProductsModel(object):
     table_name: str = 'products'
 
     def __init__(self, data):
-        self.id = data.get('id', None)
-        self.name = data.get('name', None)
-        self.description = data.get('description', None)
-        self.price = data.get('price', None)
-        self.stock_quantity = data.get('stock_quantity', None)
+        self.id = data.get('id')
+        self.name = data.get('name')
+        self.description = data.get('description')
+        self.price = data.get('price')
+        self.stock_quantity = data.get('stock_quantity')
 
     def columns(self):
         return 'id', 'name', 'description', 'price', 'stock_quantity'

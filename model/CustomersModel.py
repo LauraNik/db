@@ -7,10 +7,10 @@ class CustomersModel(object):
     email: str = None
     table_name: str = 'customers'
 
-    def __init__(self, **data):
-        self.id = data.get('id', None)
-        self.name = data.get('name', None)
-        self.email = data.get('email', None)
+    def __init__(self, data):
+        self.id = data.get('id')
+        self.name = data.get('name')
+        self.email = data.get('email')
 
     def columns(self):
         return 'id', 'name', 'email'
