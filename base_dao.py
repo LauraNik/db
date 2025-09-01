@@ -150,8 +150,7 @@ class BaseDAO:
         
         try:
                 
-            print(values, cols, param_list)
-            print('1111')
+            
             expr = ", ".join([f"{col}=?" for col in cols])
                 
             query = f"UPDATE {table} SET {expr} WHERE {condition}"
