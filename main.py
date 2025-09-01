@@ -5,6 +5,9 @@ from service.orders_service import OrdersService
 import os
 
 def main():
+    # TODO Создаём для каждого серсива свою view
+    # в каждой view должен находиться код описывающий процесс
+    # отображения данных для пользователя
 
     if 'database.db' not in os.listdir():
         initialize_db()
