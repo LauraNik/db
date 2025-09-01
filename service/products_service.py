@@ -1,4 +1,5 @@
 from model.ProductsModel import ProductsModel
+# TODO
 from model.OrderItemsModel import OrderItemsModel
 from service.base_service import BaseService
 from dataclasses import asdict
@@ -10,6 +11,7 @@ class ProductsService(BaseService):
     
     def create_entity(self, data):
         super().create_entity(self.model(data))
+        # TODO убрать принты
         print("Товар добавлен.")
 
     def update_entity(self, product_id, quantity_change):

@@ -27,6 +27,7 @@ def main():
             desc = input("Описание: ")
             price = float(input("Цена: "))
             qty = int(input("Количество: "))
+            # TODO
             ProductsService().create_entity({'name': name, "description": desc, 'price': price, 'stock_quantity': qty})
             #add_product(name, desc, price, qty)
         elif choice == "2":

@@ -15,6 +15,7 @@ class OrderItemsModel(object):
 
     def __init__(self, data):
         
+        # TODO выносим в BaseModel (self.__setattr__)
         self.id = data.get('id')
         self.order_id = data.get('order_id')
         self.product_id = data.get('product_id')
@@ -23,7 +24,7 @@ class OrderItemsModel(object):
         
         self.order = OrdersModel(data) 
         self.product = ProductsModel(data) 
-
+    # TODO raise NotImplementedError
     def columns(self):
         return 'id', 'order_id', 'product_id', 'quantity', 'price_at_order'
     

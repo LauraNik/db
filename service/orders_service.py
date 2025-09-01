@@ -1,6 +1,7 @@
 from datetime import datetime
 from model.OrdersModel import OrdersModel
 from model.OrderItemsModel import OrderItemsModel
+# TODO
 from model.ProductsModel import ProductsModel
 from service.base_service import BaseService
 from service.products_service import ProductsService
@@ -19,7 +20,7 @@ class OrdersService(BaseService):
             total = 0
             # Проверка наличия товаров
             for product_id, qty in items:
-                
+                # TODO
                 info = ProductsService().get_entity('id = ?', params = (product_id,))
                 if not info:
                     raise Exception(f"Товар {product_id} не найден.")

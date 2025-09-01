@@ -10,6 +10,7 @@ class OrderItemsService(BaseService):
         # Получаем данные о заказе и клиенте
         
         joins = [('JOIN', 'customers', 'orders.customer_id = customers.id')]
+        # TODO
         order_info = OrdersService().get_entity(joins = joins,  condition = 'orders.id = ?', params = (order_id,))
         if not order_info:
             print(f"Заказ с ID {order_id} не найден.")

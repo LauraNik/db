@@ -3,6 +3,9 @@ import sqlite3
 
 class BaseDAO:
     def __init__(self):
+        # TODO connect закрываем при закрытие программы
+        # TODO проверить сколько создаётся конектов к БД, 
+        # если больше 1, тогда применить паттерн singleton (через класс ConnectSingleton)
         self.conn = get_connection()
         self.conn.row_factory = sqlite3.Row
         self.cursor = self.conn.cursor()
@@ -48,7 +51,7 @@ class BaseDAO:
         return self._select(model, params, columns, condition, joins, order_by=order_by)
 
 
-    
+    # TODO return status
     def delete_entity(self, model, condition: str, params: tuple):
         """Удалить запись"""
         try:
@@ -64,7 +67,7 @@ class BaseDAO:
                 pass 
 
 
-
+    # TODO return status, data
     def _select(self, model, params = (), columns: str = '*', condition: str = None, joins = None, one = False, 
                 order_by = None):
         
