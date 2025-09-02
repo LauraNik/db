@@ -5,6 +5,7 @@ class BaseModel(object):
     def __init__(self, data):
         
         for col in self.columns():
+            # TODO add default value
             setattr(self, col, data.get(col))
     
     def columns(self):

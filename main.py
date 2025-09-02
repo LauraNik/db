@@ -38,7 +38,9 @@ def main():
             desc = input("Описание: ")
             price = float(input("Цена: "))
             qty = int(input("Количество: "))
+            # TODO
             status = products_view.add_product({'name': name, "description": desc, 'price': price, 'stock_quantity': qty})
+            # TODO view
             if status:
                 print("Товар добавлен.")
             else:
@@ -100,6 +102,7 @@ def main():
                 print(status)
             
         elif choice == "0":
+            # TODO
             singleton.cursor()
             break
         else:

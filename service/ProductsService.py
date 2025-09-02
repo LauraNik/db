@@ -8,6 +8,7 @@ class ProductsService(BaseService):
         super().__init__(ProductsModel)
     
     def create_entity(self, data):
+        # TODO
         status = super().create_entity(self.model(data))
         return status
 
@@ -40,7 +41,7 @@ class ProductsService(BaseService):
         # Если можно — удаляем
         status = super().delete_entity('id=?', params = (product_id,))
         return status
-
+    # todo remove
     def get_entities(self):
         status, rows = super().get_entities()
         return status, rows

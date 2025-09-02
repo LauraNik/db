@@ -52,7 +52,7 @@ class OrdersService(BaseService):
 
                 
                 status = products_service.update_entities(data_list_for_update, condition = 'id = ?', param_list = param_list)
-                
+                # TODO objects
                 return f"Заказ №{order_id} создан на сумму {total:.2f}"
             
             else:

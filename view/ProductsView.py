@@ -5,6 +5,7 @@ class ProductsView(object):
         self.service = ProductsService()
 
     def add_product(self, data):
+        # TODO remove return
         return self.service.create_entity(data)
 
     def update_stock(self, *args):
@@ -15,7 +16,7 @@ class ProductsView(object):
     
     def list_products(self):
         status, rows = self.service.get_entities()
-        
+        # TODO
         if not status:
             return status
         for row in rows:

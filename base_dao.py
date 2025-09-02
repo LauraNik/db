@@ -1,6 +1,7 @@
 from ConnectSingleton import ConnectSingleton
-
+# TODO
 class BaseDAO:
+    # TODO переделать через библиотеку sqlalchemy
     def __init__(self):
         singleton = ConnectSingleton()
         self.conn = singleton.connection
@@ -158,6 +159,7 @@ class BaseDAO:
             return True
         
         except Exception as e:
+            # todo табуляция
                 print(f"Ошибка: {e}")
                 self.conn.rollback()
                 return False

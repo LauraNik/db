@@ -20,7 +20,7 @@ class OrderItemsView(object):
 
         joins = [('JOIN', 'products', 'order_items.product_id = products.id')]
         status, rows = self.service.get_entities(joins = joins,  condition = 'order_items.order_id = ?', params = (order_id,))
-
+        # TODO check status
         print("\n Товары в заказе:")
         for row in rows:
             print(f" {row.product.name} | Кол-во: {row.quantity} | Цена за ед. на момент заказа: {row.price_at_order}")

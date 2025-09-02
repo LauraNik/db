@@ -2,7 +2,7 @@ import sqlite3
 
 DB_NAME = "database.db"
 
-
+# TODO
 def get_connection():
     return sqlite3.connect(DB_NAME)
 
@@ -46,7 +46,7 @@ def initialize_db():
         )
         """
     ]
-
+    # TODO 
     conn = get_connection()  
     cursor = conn.cursor()
 
