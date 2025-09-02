@@ -21,8 +21,8 @@ class BaseService(object):
         return self.dao.get_entity(self.model, condition, columns, params, joins, order_by)
 
     def get_entities(self, condition=None, params=(), columns="*", joins=None, order_by = None):
-        rows = self.dao.get_entities(self.model, condition, params, columns, joins, order_by)
-        return rows
+        status, rows = self.dao.get_entities(self.model, condition, params, columns, joins, order_by)
+        return status, rows
     
     def delete_entity(self, condition: str, params: tuple):
         self.dao.delete_entity(self.model, condition, params)

@@ -1,14 +1,10 @@
-from utils import get_connection
-import sqlite3
+from ConnectSingleton import ConnectSingleton
 
 class BaseDAO:
     def __init__(self):
-        # TODO connect закрываем при закрытие программы
-        # TODO проверить сколько создаётся конектов к БД, 
-        # если больше 1, тогда применить паттерн singleton (через класс ConnectSingleton)
-        self.conn = get_connection()
-        self.conn.row_factory = sqlite3.Row
-        self.cursor = self.conn.cursor()
+        singleton = ConnectSingleton()
+        self.conn = singleton.connection
+        self.cursor = singleton.cursor()
 
     def create_entity(self, model):
         """Создать одну запись"""
@@ -25,7 +21,7 @@ class BaseDAO:
         values = [model.values() for model in models]
         columns = list(models[0].columns())
         
-        self._insert(table, columns, values, one=False) 
+        return self._insert(table, columns, values, one=False) 
 
 
     def update_entity(self, model, condition: str, params: tuple):
@@ -35,14 +31,14 @@ class BaseDAO:
         table = model.table_name
         cols = model.columns()
         vals = model.values()
-        self._update(table, cols, [vals], condition, param_list, True)
+        return self._update(table, cols, [vals], condition, param_list, True)
 
     def update_entities(self, models, condition: str, param_list: list[tuple]):
         """Обновить несколько записей (batch update)"""
         table = models[0].table_name
         cols = models[0].columns()
         vals = [model.values() for model in models]
-        self._update(table, cols, vals, condition, param_list)
+        return self._update(table, cols, vals, condition, param_list)
 
     def get_entity(self, model, condition: str = None, columns = "*", params=(), joins=None, order_by = None):
         return self._select(model, params, columns, condition, joins, True, order_by)
@@ -51,7 +47,6 @@ class BaseDAO:
         return self._select(model, params, columns, condition, joins, order_by=order_by)
 
 
-    # TODO return status
     def delete_entity(self, model, condition: str, params: tuple):
         """Удалить запись"""
         try:
@@ -59,15 +54,13 @@ class BaseDAO:
             query = f'DELETE FROM {table} WHERE {condition}'
             self.cursor.execute(query, params)
             self.conn.commit()
+            return True
         except Exception as e:
                 print(f"Ошибка: {e}")
                 self.conn.rollback()
-        finally:
-                #self.conn.close()
-                pass 
+                return False
 
 
-    # TODO return status, data
     def _select(self, model, params = (), columns: str = '*', condition: str = None, joins = None, one = False, 
                 order_by = None):
         
@@ -77,7 +70,6 @@ class BaseDAO:
         """
         try:
             table = model.table_name
-        
             query = f"SELECT {columns} FROM {table}"
                 
             if joins:
@@ -91,35 +83,30 @@ class BaseDAO:
             if order_by:
                 query += f" ORDER BY {order_by}"
 
-            
             self.cursor.execute(query, params)
             data = self.cursor.fetchone() if one else self.cursor.fetchall()
         
-            
             if columns == '*':
                 if one:
                     if data:
-                        return model(dict(data))
+                        return True, model(dict(data))
                     else:
-                        return None
+                        return False, None
                 else:
                     
-                    return [model(dict(row)) for row in data]
+                    return True, [model(dict(row)) for row in data]
                         
             else:
-                return data[0]
+                return True, data[0]
         
         except Exception as e:
                 print(f"Ошибка: {e}")
                 self.conn.rollback()
-        finally:
-                #self.conn.close()
-                pass
+                return False, None
+        
 
     
-
-    def _insert(self, table, columns: list[str], values: tuple, one: bool = True):
-        
+    def _insert(self, table:str, columns: list[str], values: tuple, one: bool = True):
         try:
             placeholders = ", ".join(["?"] * len(columns))
             query = f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({placeholders})"
@@ -127,19 +114,19 @@ class BaseDAO:
                 self.cursor.execute(query, values)
                 row_id = self.cursor.lastrowid
                 self.conn.commit()
-                return row_id
+                return True, row_id
             else:
-                self.cursor.executemany(query, values)
+                row_ids = self.cursor.executemany(query, values)
                 self.conn.commit()
+                return True, row_ids
         except Exception as e:
                 print(f"Ошибка: {e}")
                 self.conn.rollback()
-        finally:
-                #self.conn.close()
-                pass
+                if one:
+                    return False, None
+                return False
+        
 
-
-    
     def _update(self, table:str, cols: list, values: list[list], condition: str, param_list: list[tuple] = None, one = False):
         """
         Универсальное обновление записей.
@@ -152,15 +139,11 @@ class BaseDAO:
         """
         
         try:
-                
-            
-            expr = ", ".join([f"{col}=?" for col in cols])
-                
+            expr = ", ".join([f"{col}=?" for col in cols])   
             query = f"UPDATE {table} SET {expr} WHERE {condition}"
                 
             # один update
             if one:
-                #values = tuple(data_list[0].values()) if data_list else ()
                 values = values[0]
                 if param_list:
                     values += tuple(param_list[0])
@@ -168,19 +151,15 @@ class BaseDAO:
                 
             # множественный update
             else:
-                #values = [tuple(dictionary.values()) + param for dictionary, param in zip(data_list, param_list)]
                 values = [v + param for v, param in zip(values, param_list)]
-              
                 self.cursor.executemany(query, values)
             
-            
             self.conn.commit()
+            return True
         
         except Exception as e:
                 print(f"Ошибка: {e}")
                 self.conn.rollback()
+                return False
         
-        finally:
-                #self.conn.close()
-                pass
     
