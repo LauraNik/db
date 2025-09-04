@@ -4,7 +4,6 @@ from view.ProductsView import ProductsView
 from view.OrdersView import OrdersView  
 from view.CustomersView import CustomersView 
 from view.OrderItemsView import OrderItemsView
-
 import os
 
 def main():
@@ -12,7 +11,6 @@ def main():
     if 'database.db' not in os.listdir():
         initialize_db()
     
-    singleton = ConnectSingleton()
     products_view = ProductsView()
     orders_view = OrdersView()      
     customers_view = CustomersView() 
@@ -38,32 +36,26 @@ def main():
             desc = input("Описание: ")
             price = float(input("Цена: "))
             qty = int(input("Количество: "))
-            # TODO
-            status = products_view.add_product({'name': name, "description": desc, 'price': price, 'stock_quantity': qty})
-            # TODO view
-            if status:
-                print("Товар добавлен.")
-            else:
-                print('Товар не добавлен')
+            data = {"name": name, 'description': desc, 'price': price, 'stock_quantity': qty}
+            products_view.add_product(data)
+            
             
         elif choice == "2":
-            status = products_view.list_products()
-            if not status:
-                print("Товаров нет.")
+            products_view.list_products()
+            
 
         elif choice == "3":
             pid = int(input("ID товара: "))
             change = int(input("Изменение количества (+/-): "))
-            status = products_view.update_stock(pid, change)
-            print(status)
+            products_view.update_stock(pid, change)
+
 
         elif choice == "4":
             name = input("Имя клиента: ")
             email = input("Email: ")
-            
-            status = customers_view.add_customer({'name': name, 'email': email})
-            if status:
-                print("Клиент добавлен.")
+            data = {'name': name, 'email': email}
+            customers_view.add_customer(data)
+
 
         elif choice == "5":
             customers_view.list_customers()
@@ -78,32 +70,22 @@ def main():
                 qty = int(input("Количество: "))
                 items.append((pid, qty))
 
-            status = orders_view.create_order(cid, items)
-            print(status)
+            orders_view.create_order(cid, items)
 
     
         elif choice == '7':
             cid = int(input("ID товара: "))
-            status = products_view.delete_product(cid)
-            if status:
-                print('Товар успешно удален')
-            else:
-                print("Нельзя удалить товар — он участвует в завершённых заказах.")
+            products_view.delete_product(cid)
 
         elif choice == '8':
-            status = orders_view.list_orders()
-            if not status:
-                print(" Заказов пока нет.")
+            orders_view.list_orders()
         
         elif choice == '9':
             cid = int(input("ID заказа: "))
-            status = order_items_view.order_details(cid)
-            if status:
-                print(status)
+            order_items_view.order_details(cid)
             
         elif choice == "0":
-            # TODO
-            singleton.cursor()
+            ConnectSingleton.close()
             break
         else:
             print(" Неверный выбор")

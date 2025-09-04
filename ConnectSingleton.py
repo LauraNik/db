@@ -1,34 +1,38 @@
-import sqlite3
-from utils import get_connection
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
+DB_NAME = "database.db"
 class ConnectSingleton:
     _instance = None
-    _connection = None
+    _session = None
+    _engine = None
 
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super().__new__(cls)
-            cls._connection = get_connection()
-            cls._connection.row_factory = sqlite3.Row
+            cls._engine = create_engine("sqlite:///" + DB_NAME, echo = True)
+            SessionLocal = sessionmaker(bind=cls._engine, autoflush=False, autocommit=False)
+            cls._session = SessionLocal()
+            
         return cls._instance
 
-    # TODO staticmethod
-    @property
-    def connection(self):
-        return self._connection
-    # TODO remove
-    def cursor(self):
-        return self._connection.cursor()
-    # TODO remove
-    def commit(self):
-        self._connection.commit()
-    # TODO remove
-    def rollback(self):
-        self._connection.rollback()
-    # TODO staticmethod
-    def close(self):
-        if self._connection:
-            self._connection.close()
-            # TODO
-            self._connection = None
+    @staticmethod
+    def get_session():
+        if ConnectSingleton._session is None:
+            ConnectSingleton._instance = ConnectSingleton()
+        return ConnectSingleton._session
+    
+    @staticmethod
+    def get_engine():
+        if ConnectSingleton._session is None:
+            ConnectSingleton._instance = ConnectSingleton()
+        return ConnectSingleton._engine
+        
+    @staticmethod
+    def close():
+        if ConnectSingleton._session:
+            ConnectSingleton._session.close()
+            ConnectSingleton._engine.dispose()
+            ConnectSingleton._engine = None
+            ConnectSingleton._session = None
             ConnectSingleton._instance = None

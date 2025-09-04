@@ -1,10 +1,10 @@
-import sqlite3
+from ConnectSingleton import ConnectSingleton
+from sqlalchemy.orm import DeclarativeBase
 
-DB_NAME = "database.db"
+def initialize_db():
+    engine = ConnectSingleton.get_engine()
+    DeclarativeBase().metadata.create_all(bind=engine)
 
-# TODO
-def get_connection():
-    return sqlite3.connect(DB_NAME)
 
 def initialize_db():
     tables = [
@@ -46,14 +46,12 @@ def initialize_db():
         )
         """
     ]
-    # TODO 
-    conn = get_connection()  
+  
+    conn = ConnectSingleton.connection()  
     cursor = conn.cursor()
 
     for query in tables:
         cursor.execute(query)
 
     conn.commit()
-    conn.close()
-
-
+    ConnectSingleton.close()
