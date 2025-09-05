@@ -9,6 +9,7 @@ class OrderItemsView(object):
 
     def order_details(self, order_id):
         orders_service = OrdersService()
+        # todo
         customers_model = CustomersModel
         #joins = [(customers_model, orders_service.model.customer_id == customers_model.id)]
         condition =  orders_service.model.id == order_id
@@ -34,4 +35,6 @@ class OrderItemsView(object):
                 print(f"{row.product.name} | Кол-во: {row.quantity} | Цена за ед. на момент заказа: {row.price_at_order}")
         else:
             print('Товары в заказе не найдены')
-        
+
+
+print(OrderItemsView().order_details(1))

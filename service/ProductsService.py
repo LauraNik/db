@@ -34,6 +34,7 @@ class ProductsService(BaseService):
         order_items_service = OrderItemsService()
         status, count = order_items_service.get_entity(
             columns = [func.count()], 
+            # todo
             joins = [(orders_model, order_items_service.model.order_id == orders_model.id)],  
             condition = (order_items_service.model.product_id == product_id, orders_model.status != 'completed'), 
         )

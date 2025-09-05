@@ -1,6 +1,6 @@
 from ConnectSingleton import ConnectSingleton
 from sqlalchemy.orm import DeclarativeBase
-
+# TDOD не работает!
 def initialize_db():
     engine = ConnectSingleton.get_engine()
     DeclarativeBase().metadata.create_all(bind=engine)
