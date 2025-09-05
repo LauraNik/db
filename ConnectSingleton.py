@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+# TODO
 from sqlalchemy.orm import sessionmaker, Session
 
 DB_NAME = "database.db"
@@ -22,11 +23,9 @@ class ConnectSingleton:
             ConnectSingleton._instance = ConnectSingleton()
         return ConnectSingleton._session
     
-    @staticmethod
-    def get_engine():
-        if ConnectSingleton._session is None:
-            ConnectSingleton._instance = ConnectSingleton()
-        return ConnectSingleton._engine
+    @classmethod
+    def get_engine(cls):
+        return cls.get_session()._engine
         
     @staticmethod
     def close():
