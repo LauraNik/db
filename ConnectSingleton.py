@@ -24,9 +24,7 @@ class ConnectSingleton:
     
     @staticmethod
     def get_engine():
-        if ConnectSingleton._session is None:
-            ConnectSingleton._instance = ConnectSingleton()
-        return ConnectSingleton._engine
+        return ConnectSingleton()._engine
         
     @staticmethod
     def close():
