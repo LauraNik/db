@@ -10,10 +10,10 @@ class OrderItemsView(object):
     def order_details(self, order_id):
         orders_service = OrdersService()
         customers_model = CustomersModel
-        joins = [(customers_model, orders_service.model.customer_id == customers_model.id)]
+        #joins = [(customers_model, orders_service.model.customer_id == customers_model.id)]
         condition =  orders_service.model.id == order_id
     
-        status, order_info = orders_service.get_entity(joins = joins,  condition = condition)
+        status, order_info = orders_service.get_entity( condition = condition)
 
         if not status:
             print(f"Заказ с ID {order_id} не найден.", None, None)
@@ -25,9 +25,9 @@ class OrderItemsView(object):
         print(f"Общая сумма: {order_info.total_amount}")
 
         products_model = ProductsModel
-        joins = [(products_model, self.service.model.product_id == products_model.id)]
+        #joins = [(products_model, self.service.model.product_id == products_model.id)]
         condition = self.service.model.order_id == order_id
-        status, rows = self.service.get_entities(joins = joins,  condition = condition)
+        status, rows = self.service.get_entities( condition = condition)
         if status:
             print("\n Товары в заказе:")
             for row in rows:
