@@ -22,6 +22,7 @@ class OrdersService(BaseService):
             order_items_service = OrderItemsService()
             # Проверка наличия товаров
             for product_id, qty in items:
+                # TODO
                 status, info = products_service.get_entity(condition =  products_service.model.id == product_id)
                 
                 if not status:
@@ -67,6 +68,7 @@ class OrdersService(BaseService):
 
     def get_entities(self):
         customers_service = CustomersService()
+        # todo
         joins = [(customers_service.model, self.model.customer_id == customers_service.model.id)]
         status, rows = super().get_entities(joins = joins,  order_by = desc(self.model.order_date))
         if status:

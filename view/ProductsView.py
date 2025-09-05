@@ -33,6 +33,7 @@ class ProductsView(object):
     
     def list_products(self):
         status, rows = self.service.get_entities()
+        # TODO
         if not status:
             print("Товаров нет.")
         for row in rows:

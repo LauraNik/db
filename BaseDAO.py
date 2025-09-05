@@ -59,6 +59,7 @@ class BaseDAO:
                     query = query.where(condition)
 
             query = query.select_from(model_class)        
+            # todo
             if joins:
                 for join_model, join_condition in joins:
                     #query = query.select_from(join_model)
