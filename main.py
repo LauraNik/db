@@ -5,10 +5,12 @@ from view.OrdersView import OrdersView
 from view.CustomersView import CustomersView 
 from view.OrderItemsView import OrderItemsView
 import os
+from dotenv import load_dotenv
 
 def main():
-
-    if 'database.db' not in os.listdir():
+    load_dotenv()
+    db_name = os.getenv('DB_NAME')
+    if db_name not in os.listdir():
         initialize_db()
     
     products_view = ProductsView()
