@@ -5,14 +5,17 @@ class OrdersView:
         self.service = OrdersService()
 
     def create_order(self, *args):
-        first_check, product_id, second_check, stock, third_check, fourth_check, order_id, total = self.service.create_entities(*args)
-        if not first_check:
+        result = self.service.create_entities(*args)
+        if not result['first_check'][0]:
+            product_id = result['first_check'][1]
             print(f"Товар {product_id} не найден.")
-        elif not second_check:
+        elif result['second_check'][0]:
+            product_id, stock = result['second_check'][1], result['second_check'][2]
             print(f"Недостаточно товара с ID {product_id}. В наличии: {stock}")
-        elif not third_check:
+        elif not result['third_check']:
             print('Покупатель не найден. Заказ создать не удалось.')
-        elif fourth_check:
+        elif result['status'][0]:
+            order_id, total = result['status'][1], result['status'][2]
             print(f"Заказ №{order_id} создан на сумму {total:.2f}")
        
 

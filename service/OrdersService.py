@@ -1,10 +1,10 @@
 from datetime import datetime
 from model.OrdersModel import OrdersModel
-from model.OrderItemsModel import OrderItemsModel
 from service.BaseService import BaseService
 from service.ProductsService import ProductsService
 from service.CustomersService import CustomersService
 from service.OrderItemsService import OrderItemsService
+from schema.OrderItemsSchema import OrderItemsSchema
 from sqlalchemy import desc
 
 
@@ -16,61 +16,61 @@ class OrdersService(BaseService):
     def create_entities(self, customer_id, items): # items = [(product_id, quantity), ...]
         try:
             data_list = []
-            #data_list_for_update = []
             total = 0
             products_service = ProductsService()
             order_items_service = OrderItemsService()
+            #result = {'first_check': None, 'second_check': None, 'third_check': None, 'status': None}
+            result = {}
             # Проверка наличия товаров
             for product_id, qty in items:
-                # TODO
-                status, info = products_service.get_entity(condition =  products_service.model.id == product_id)
-                
-                if not status:
-                    return status, product_id, None, None, None, None, None, None
+                condition = (products_service.model.id == product_id)
+                first_check, info = products_service.get_entity(condition =  condition)
+                result['first_check'] = (first_check, product_id)
+                if not first_check:
+                    return result
                 
                 price, stock = info.price, info.stock_quantity
                 data = {"product_id": product_id, "quantity": qty, "price_at_order": price}
-                data_list.append(OrderItemsModel(**data))
+                order_items_schema = OrderItemsSchema()
+                order_items_model = order_items_schema.load(data)
+                #order_items_model = OrderIte
+                data_list.append(order_items_model)
                 info.stock_quantity = stock - qty
-                #data_list_for_update.append(info)
-              
 
+                result['second_check'] = (stock < qty, product_id, stock)
                 if stock < qty:
-                    return status, product_id, False, stock, None, None, None, None
+                    return result
                 
                 total += price * qty
 
             #Создание заказа, вовзращает его id 
             order_date = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             customers_service = CustomersService()
-            cust_status, _ = customers_service.get_entity(condition = customers_service.model.id == customer_id)
-            
+            condition = (customers_service.model.id == customer_id)
+            cust_status, _ = customers_service.get_entity(condition = condition)
+            result['third_check'] = cust_status
             # Добавление товаров и обновление склада
             if cust_status:
                 data = {'customer_id': customer_id, 'order_date': order_date, 'total_amount': total}
-                _, order_id = self.create_entity(self.model(**data))
+                status, order_id = self.create_entity(self.model(**data)) # ??? менять на схему?
                 
                 for m in data_list:
                     m.order_id = order_id
                 
                 _ = order_items_service.create_entities(data_list)
 
-                
-                #status = products_service.update_entities(data_list_for_update)
-                return True, None, True, None, cust_status, status, order_id, total
+                result['status'] = (status, order_id, total)
+                return result
             
             else:
-                return True, None, True, None, cust_status, None, None, None
+                return result
 
         
         except Exception as e:
             print(f"Ошибка: {e}")    
 
     def get_entities(self):
-        customers_service = CustomersService()
-        # todo
-        joins = [(customers_service.model, self.model.customer_id == customers_service.model.id)]
-        status, rows = super().get_entities(joins = joins,  order_by = desc(self.model.order_date))
+        status, rows = super().get_entities(order_by = desc(self.model.order_date))
         if status:
             return status, rows
         return status, None

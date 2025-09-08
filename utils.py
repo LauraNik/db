@@ -1,57 +1,9 @@
 from ConnectSingleton import ConnectSingleton
 from sqlalchemy.orm import DeclarativeBase
-# TDOD не работает!
+# TODO не работает!
+class Base(DeclarativeBase):
+    pass
+
 def initialize_db():
     engine = ConnectSingleton.get_engine()
-    DeclarativeBase().metadata.create_all(bind=engine)
-
-
-def initialize_db():
-    tables = [
-        """
-        CREATE TABLE IF NOT EXISTS products (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL UNIQUE,
-            description TEXT,
-            price REAL NOT NULL CHECK(price > 0),
-            stock_quantity INTEGER NOT NULL CHECK(stock_quantity >= 0)
-        )
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS customers (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            email TEXT NOT NULL UNIQUE
-        )
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS orders (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            customer_id INTEGER NOT NULL,
-            order_date TEXT NOT NULL,
-            total_amount REAL NOT NULL,
-            status TEXT NOT NULL DEFAULT 'pending',
-            FOREIGN KEY (customer_id) REFERENCES customers(id)
-        )
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS order_items (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            order_id INTEGER NOT NULL,
-            product_id INTEGER NOT NULL,
-            quantity INTEGER NOT NULL CHECK(quantity > 0),
-            price_at_order REAL NOT NULL,
-            FOREIGN KEY (order_id) REFERENCES orders(id),
-            FOREIGN KEY (product_id) REFERENCES products(id)
-        )
-        """
-    ]
-  
-    conn = ConnectSingleton.connection()  
-    cursor = conn.cursor()
-
-    for query in tables:
-        cursor.execute(query)
-
-    conn.commit()
-    ConnectSingleton.close()
+    Base.metadata.create_all(bind=engine)

@@ -7,13 +7,10 @@ from model.OrdersModel import OrdersModel
 class ProductsService(BaseService):
     def __init__(self):
         super().__init__(ProductsModel)
-    
-    def create_entity(self, data:dict):
-        # TODO
-        return super().create_entity(self.model(**data)) #из-за main, (надо везде переходить на dict)
 
     def update_entity(self, product_id, quantity_change):
-        status, row = self.get_entity(condition = (self.model.id == product_id))
+        condition = (self.model.id == product_id)
+        status, row = self.get_entity(condition = condition)
         qty = row.stock_quantity
 
         if not status:
@@ -33,9 +30,7 @@ class ProductsService(BaseService):
         orders_model = OrdersModel #лучше импортить модель, иначе цикл
         order_items_service = OrderItemsService()
         status, count = order_items_service.get_entity(
-            columns = [func.count()], 
-            # todo
-            joins = [(orders_model, order_items_service.model.order_id == orders_model.id)],  
+            columns = [func.count()],  
             condition = (order_items_service.model.product_id == product_id, orders_model.status != 'completed'), 
         )
         

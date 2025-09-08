@@ -22,11 +22,11 @@ class BaseDAO:
         """Обновить несколько записей (batch update)"""
         return self._update(models, False)
 
-    def get_entity(self, model_class, columns = None, condition=None, joins=None, order_by=None):
-        return self._select(model_class, columns, condition, joins, order_by)
+    def get_entity(self, model_class, columns = None, condition=None, order_by=None):
+        return self._select(model_class, columns, condition, order_by)
             
-    def get_entities(self, model_class, columns = None, condition=None, joins=None, order_by=None):
-        return self._select(model_class, columns, condition, joins, order_by, False)
+    def get_entities(self, model_class, columns = None, condition=None, order_by=None):
+        return self._select(model_class, columns, condition, order_by, False)
 
 
     def delete_entity(self, model_class, condition):
@@ -44,7 +44,7 @@ class BaseDAO:
             return False, 0
 
 
-    def _select(self, model_class, columns = None, condition = None, joins = None, order_by = None, one = True):
+    def _select(self, model_class, columns = None, condition = None, order_by = None, one = True):
 
         try:
             if columns:
@@ -59,14 +59,7 @@ class BaseDAO:
                     query = query.where(condition)
 
             query = query.select_from(model_class)        
-            # todo
-            if joins:
-                for join_model, join_condition in joins:
-                    #query = query.select_from(join_model)
-                    #query = query.join(join_condition)
-                    query = query.join(join_model, join_condition)
-                    
-                    
+                           
             if order_by is not None:
                 query = query.order_by(order_by)
                 

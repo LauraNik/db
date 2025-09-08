@@ -1,11 +1,14 @@
 from service.ProductsService import ProductsService
+from schema.ProductsSchema import ProductsSchema
 
 class ProductsView(object):
     def __init__(self):
         self.service = ProductsService()
 
     def add_product(self, data):
-        status = self.service.create_entity(data)
+        product_schema = ProductsSchema()
+        product_model = product_schema.load(data)
+        status = self.service.create_entity(product_model)
         if status:
             print("Товар добавлен.")
         else:
@@ -33,10 +36,9 @@ class ProductsView(object):
     
     def list_products(self):
         status, rows = self.service.get_entities()
-        # TODO
-        if not status:
+        if status:
+            for row in rows:
+                print(row)
+        else:
             print("Товаров нет.")
-        for row in rows:
-            print(row)
-
        

@@ -1,6 +1,5 @@
 from sqlalchemy import create_engine
-# TODO
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 
 DB_NAME = "database.db"
 class ConnectSingleton:
